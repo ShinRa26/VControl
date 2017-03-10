@@ -55,8 +55,6 @@ private:
         {
             writeln("Please specify details!");
         }
-
-        return;
     }
 
     // Parse Add function

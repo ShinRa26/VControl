@@ -1,12 +1,22 @@
 module vctrl.manager;
 
 import std.stdio, std.file;
+import vctrl.vfile;
+import vctrl.addcontrol; //, vctrl.commitcontrol, vctrl.revertcontrol, vctrl.diffcontrol;
 
 class Manager
 {
 public:
-    this(){}
+    this()
+    {
+        loadStageFile();
+        ac = new AddControl(stage);
+    }
     ~this(){}
+
+    /*****************************************************************
+    ************************** MANAGER CONTROLS***********************
+    *****************************************************************/
 
     // Init a VCtrl project
     void initVCtrl()
@@ -14,30 +24,51 @@ public:
         // TODO Implement
     }
 
-
     /*****************************************************************
     ****************************ADD SECTION***************************
     *****************************************************************/
     
-    // Adds all files in the CWD and all subfolders
+    // Adds all files in the CWD and all subfolders to the stage
     void addFromCWD()
     {
-        // TODO Implement
+        ac.addFromCwd();
     }
 
-    // Adds all files from the project root src
+    // Adds all files from the project root src to the stage
     void addFromRoot()
     {
-        //TODO Implement
+        ac.addFromRoot();
     }
 
-    // Add a file
+    // Add a file to the stage
     void addFile(string filename)
     {
-        // TODO Implement
+        ac.addFile(filename);
     }
 
 
 private:
-    string temp;
+    VFile[] stage;
+
+    AddControl ac;
+    CommitControl cc;
+    RevertControl rc;
+    DiffControl dc;
+
+    /*****************************************************************
+    ************************** MANAGER CONTROLS **********************
+    *****************************************************************/
+
+    // Loads the stage from the stage file, if it exists
+    void loadStageFile()
+    {
+        // TODO: Implement
+        this.stage = null;
+    }
+
+    // Removes the saved stage file -- AFTER COMMITS --
+    void removeStageFile()
+    {
+        // TODO: Implement
+    }
 }
