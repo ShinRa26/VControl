@@ -1,4 +1,4 @@
-import std.stdio;
+import std.stdio, std.file;
 import vctrl.vcontrol;
 
 void main(string[] args)

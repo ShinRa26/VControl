@@ -15,13 +15,22 @@ public:
     ~this(){}
 
     /*****************************************************************
-    ************************** MANAGER CONTROLS***********************
+    ***************************MANAGER CONTROLS***********************
     *****************************************************************/
 
     // Init a VCtrl project
     void initVCtrl()
     {
-        // TODO Implement
+        const auto cwd = getcwd();
+        const auto vctrlFolderLoc = cwd~vctrlFolder;
+
+        if(!(vctrlFolderLoc.isDir))
+        {
+            mkdir(vctrlFolderLoc);
+            // TODO: More folders?
+        }
+        else
+            writeln("VCtrl Project already exists!");
     }
 
     /*****************************************************************
@@ -31,7 +40,7 @@ public:
     // Adds all files in the CWD and all subfolders to the stage
     void addFromCWD()
     {
-        ac.addFromCwd();
+        ac.addFromCWD();
     }
 
     // Adds all files from the project root src to the stage
@@ -51,9 +60,11 @@ private:
     VFile[] stage;
 
     AddControl ac;
-    CommitControl cc;
-    RevertControl rc;
-    DiffControl dc;
+    // CommitControl cc;
+    // RevertControl rc;
+    // DiffControl dc;
+
+    const string vctrlFolder = ".vctrl";
 
     /*****************************************************************
     ************************** MANAGER CONTROLS **********************

@@ -38,14 +38,14 @@ private:
                 case "add":
                     parseAdd(args[1..$]);
                     break;
-                case "commit":
-                    parseCommit(args[1..$]);
-                    break;
-                case "revert":
-                    parseRevert(args[1..$]);
-                    break;
-                case "diff":
-                    parseDiff(args[1..$]);
+                // case "commit":
+                //     parseCommit(args[1..$]);
+                //     break;
+                // case "revert":
+                //     parseRevert(args[1..$]);
+                //     break;
+                // case "diff":
+                //     parseDiff(args[1..$]);
                 default:
                     writeln("That is not a valid command!\n");
                     break;
@@ -67,7 +67,7 @@ private:
         else
         {
             foreach(f; addArgs)
-                mgr.AddFile(f);
+                mgr.addFile(f);
         }
     }
 }
