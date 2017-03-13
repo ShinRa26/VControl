@@ -27,6 +27,11 @@ public:
         if(!(vctrlFolderLoc.isDir))
         {
             mkdir(vctrlFolderLoc);
+            chdir(vctrlFolderLoc);
+            auto log = File(".vctrl", "w");
+            log.write("// LogFile for VCtrl Projects");
+            log.close(); 
+            mkdir("current_stage");
             // TODO: More folders?
         }
         else

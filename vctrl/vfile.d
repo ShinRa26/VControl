@@ -1,19 +1,20 @@
 module vctrl.vfile;
 
-import std.string, std.stdio, std.file;
+import std.string, std.stdio, std.file, std.conv;
 
 class VFile
 {
 public:
-    this(string filename, const ubyte[] contents)
+    this(string filename, string loc, string data)
     {   
         this.filename = filename;
-        this.contents = contents;
+        this.loc = loc;
+        this.contents = cast(ubyte[])data;
     }
     ~this(){}
 
 private:
     const string filename;
-    // All the data contained within the file
+    const string loc;
     const ubyte[] contents;
 }
