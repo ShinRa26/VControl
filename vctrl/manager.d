@@ -22,20 +22,23 @@ public:
     void initVCtrl()
     {
         const auto cwd = getcwd();
-        const auto vctrlFolderLoc = cwd~vctrlFolder;
+        const auto vctrlFolderLoc = cwd~"/"~vctrlFolder;
 
-        if(!(vctrlFolderLoc.isDir))
+        try
+        {
+            assert(vctrlFolderLoc.isDir);
+            writeln("VCtrl Folder already exists!");
+
+        }
+        catch(Exception e)
         {
             mkdir(vctrlFolderLoc);
             chdir(vctrlFolderLoc);
-            auto log = File(".vctrl", "w");
+            auto log = File("log.vctrl", "w");
             log.write("// LogFile for VCtrl Projects");
             log.close(); 
             mkdir("current_stage");
-            // TODO: More folders?
         }
-        else
-            writeln("VCtrl Project already exists!");
     }
 
     /*****************************************************************

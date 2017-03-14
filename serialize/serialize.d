@@ -1,14 +1,15 @@
-module serialize.serialize;
+module serialize.vserialize;
 
 import std.stdio, std.conv, std.file, std.format;
-import vfile;
+import vctrl.vfile;
 
-class Serialize
+class VSerialize
 {
 public:
     this(){}
     ~this(){}
 
+    // Compacts the data of a VFile and writes it to the .vctrl root folder
     void serialize(VFile f)
     {
         auto header = "<File>\n\t";
@@ -21,15 +22,23 @@ public:
             contents~=temp;
         }
         auto endContents = "\n\t</Contents>\n";
-        auto endHeader = "</File>";
+        auto endHeader = "</File>\n\n";
 
         auto fullFile = header~filename~loc~contents~endContents~endHeader;
 
-
-        // TODO: Point towards the .vctrl folder
-        auto file = File(f.filename~=fileExt, "w");
-        file.write(fullFile);
-        file.close();
+        // If stage file exists, append. If not, create
+        if(std.file.exists(stageFile))
+        {
+            auto file = File(stageFile, "a");
+            file.write(fullFile);
+            file.close();
+        }
+        else
+        {
+            auto file = File(stageFile, "w");
+            file.write(fullFile);
+            file.close();
+        }
     }
 
     // "Deserialise the generated files" -- Mainly for revert
@@ -39,5 +48,5 @@ public:
     }
 
 private:
-    const string fileExt = ".vfile";
+    const string stageFile = "stage.vfile";
 }
