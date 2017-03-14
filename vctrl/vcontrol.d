@@ -38,9 +38,16 @@ private:
                 case "add":
                     parseAdd(args[1..$]);
                     break;
-                // case "commit":
-                //     parseCommit(args[1..$]);
-                //     break;
+                case "commit":
+                    try
+                    {
+                        parseCommitWithMessage(args[1..$]);
+                    }
+                    catch(Exception e)
+                    {
+                        parseCommit();
+                    }
+                    break;
                 // case "revert":
                 //     parseRevert(args[1..$]);
                 //     break;
@@ -68,6 +75,31 @@ private:
         {
             foreach(f; addArgs)
                 mgr.addFile(f);
+            mgr.saveStage();
         }
+    }
+
+    // Parse Commit args
+    void parseCommitWithMessage(string[] commitArgs)
+    {
+        if(commandArgs[0] == "-m" || commitArgs[0] == "-M")
+        {
+            try
+            {
+                mgr.commitWithMessage(commandArgs[1]);
+            }
+            catch(Exception e)
+            {
+                writeln("You must pass a commit message!");
+            }
+        }
+        else
+            writeln("That is not a valid flag!");
+    }
+
+    // Commit passed without message - uses default.
+    void parseCommit()
+    {
+        mgr.commitWithoutMessage();
     }
 }

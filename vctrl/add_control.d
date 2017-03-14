@@ -19,7 +19,7 @@ public:
     // Add all files from the root source to the stage
     void addFromRoot()
     {
-        findDir(rootFolder);
+        moveDir(rootFolder);
         addFromCWD();
     }
 
@@ -43,7 +43,7 @@ public:
         saveStage();
     }
 
-    // Adds a single file to the stage
+    // Adds a single file to the stage 
     void addFile(string filename)
     {
         if(!(std.file.exists(filename)))
@@ -52,8 +52,22 @@ public:
         {
             const ubyte[] fileContents = cast(const ubyte[])read(filename);
             this.stage ~= new VFile(filename, getcwd(), fileContents);
-            saveStage();
         }
+    }
+
+    // Saves the stage to a file
+    void saveStage()
+    {
+        // Move to the .vctrl folder
+        moveDir(rootFolder);
+        chdir(rootFolder~"/"~stageFolder);
+        // TODO: Find a half-decent serialisation library - Orange throws errors for some reason
+        // Technically not serialization...
+        foreach(f;stage)
+            vserialize.serialize(f);
+
+        // Return back to root    
+        moveDir(rootFolder);
     }
 
 private:
@@ -63,21 +77,8 @@ private:
     const string rootFolder = ".vctrl";
     const string stageFolder = "current_stage";
 
-    // Saves the stage to a file
-    void saveStage()
-    {
-        // Move to the .vctrl folder
-        findDir(rootFolder);
-        chdir(rootFolder~"/"~stageFolder);
-
-        // TODO: Find a half-decent serialisation library - Orange throws errors for some reason
-        // Technically not serialization...
-        foreach(f;stage)
-            vserialize.serialize(f);
-    }
-
     // Scan for a directory
-    void findDir(string dir)
+    void moveDir(string dir)
     {
         auto entries = dirEntries("", dir, SpanMode.breadth);
         foreach(e; entries)
@@ -86,7 +87,7 @@ private:
                 return; //getcwd()~dir; // Does nothing...but moves to the correct directory regardless
         }
         chdir("..");
-        findDir(dir);
+        moveDir(dir);
     }
 
     /*
@@ -130,6 +131,11 @@ private:
             foreach(line; ignore.byLine())
             {
                 auto elem = to!string(line);
+
+                // For comments or blank lines
+                if(canFind(elem, "#") || elem == "")
+                    continue;
+
                 params~=elem;
             }
 

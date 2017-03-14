@@ -10,11 +10,4 @@ void main(string[] args)
     }
     
     auto vctrl = new VControl(args[1..$]);
-    // auto entries = dirEntries(getcwd(), "*.*", SpanMode.breadth);
-    // foreach(e;entries)
-    // {
-    //     string path = to!string(e);
-    //     auto split = path.split("/");
-    //     writeln(split[0..split.length-1]);
-    // }
 }
