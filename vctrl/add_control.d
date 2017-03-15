@@ -61,6 +61,7 @@ public:
         // Move to the .vctrl folder
         moveDir(rootFolder);
         chdir(rootFolder~"/"~stageFolder);
+        
         // TODO: Find a half-decent serialisation library - Orange throws errors for some reason
         // Technically not serialization...
         foreach(f;stage)
@@ -84,7 +85,10 @@ private:
         foreach(e; entries)
         {
             if(e[0..$] == dir)
-                return; //getcwd()~dir; // Does nothing...but moves to the correct directory regardless
+            {
+                chdir(e);
+                return;
+            }
         }
         chdir("..");
         moveDir(dir);

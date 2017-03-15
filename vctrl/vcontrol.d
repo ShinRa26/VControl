@@ -43,7 +43,7 @@ private:
                     {
                         parseCommitWithMessage(args[1..$]);
                     }
-                    catch(Exception e)
+                    catch(core.exception.RangeError e)
                     {
                         parseCommit();
                     }
@@ -82,11 +82,11 @@ private:
     // Parse Commit args
     void parseCommitWithMessage(string[] commitArgs)
     {
-        if(commandArgs[0] == "-m" || commitArgs[0] == "-M")
+        if(commitArgs[0] == "-m" || commitArgs[0] == "-M")
         {
             try
             {
-                mgr.commitWithMessage(commandArgs[1]);
+                mgr.commitWithMessage(commitArgs[1]);
             }
             catch(Exception e)
             {
