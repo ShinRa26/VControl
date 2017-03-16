@@ -4,6 +4,9 @@ import std.string, std.conv, std.file, std.algorithm, std.stdio;
 import serialize.vserialize;
 import vctrl.vfile;
 
+/**
+ * Class for reverting the current files to their previous commit state
+ */
 class RevertControl
 {
 public:
@@ -19,7 +22,17 @@ public:
         moveDir(opFolder);
         moveDir(id);
         string commitFile = to!string(read(id~".vfile"));
-        parsedFiles = vs.deserialize();
+        // parsedFiles = vs.deserialize(fileData);
+
+        auto split = commitFile.split("</File>");
+        auto blah = split[0].split("\n");
+        string contents;
+        for(int i = 0; i < blah.length; i++)
+        {
+            if(canFind(blah[i], "<Contents>"))
+                contents = blah[i+1];
+        }
+        auto cSplit = contents.split(",");
     }
 
 private:

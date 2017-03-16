@@ -1,0 +1,18 @@
+.DEFAULT_GOAL := all
+
+DCC = dmd
+DFLAGS = -w
+CFLAG = -c
+OUT = -oftest
+SRC = *.d
+
+INCLUDES = -IC:/Users/Graham/Dropbox/DProj/versionctrl/vctrl/ -IC:/Users/Graham/Dropbox/DProj/versionctrl/serialize/
+
+SERIALIZE = C:/Users/Graham/Dropbox/DProj/versionctrl/serialize/
+
+VCTRL = C:/Users/Graham/Dropbox/DProj/versionctrl/vctrl/
+
+all:
+	$(DCC) $(DFLAGS) $(INCLUDE) $(SRC) $(SERIALIZE)$(SRC) $(VCTRL)$(SRC) $(OUT)
+	rm *.obj
+	

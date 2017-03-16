@@ -1,8 +1,11 @@
 module serialize.vserialize;
 
-import std.stdio, std.conv, std.file, std.format;
+import std.stdio, std.conv, std.file, std.format, std.string, std.algorithm;
 import vctrl.vfile;
 
+/**
+ * Class for "serializing" a VFile object and "deserializing" a commit file
+ */
 class VSerialize
 {
 public:
@@ -43,12 +46,55 @@ public:
     }
 
     // "Deserialise the generated files" -- Mainly for revert
-    VFile[] deserialize()
+    VFile[] deserialize(string fileData)
     {
-        // TODO: Find out how to parse the files properly...
-        return null;
+        auto fileSplit = fileData.split("</File>");
+        foreach(file; fileSplit)
+        {
+            VFile rFile = parseSingleFile(file);
+            revertFiles~=rFile;
+        }
+
+        return revertFiles;
     }
 
 private:
+    VFile[] revertFiles;
     const string stageFile = "stage.vfile";
+
+    // Parses a data string to extract the necessary information to build a VFile -- For Revert only
+    VFile parseSingleFile(string data)
+    {
+        auto dataSplit = data.split("\n");
+        string filename, fileLocation, stringContents;
+        ubyte[] fileContents;
+
+        try
+        {
+            for(int i = 0; i < dataSplit.length; i++)
+            {
+                if(canFind(dataSplit[i], "<Filename>"))
+                    filename = dataSplit[i+1];
+                else if(canFind(dataSplit[i], "<FileLocation>"))
+                    fileLocation = dataSplit[i+1];
+                else if(canFind(dataSplit[i], "<Contents>"))
+                    stringContents = dataSplit[i+1];
+            }
+        }
+        catch(core.exception.RangeError)
+        {
+            writeln("Error in parsing the file contents. Have you been fucking about witht he commit file!?");
+        }
+
+        fileContents = parseBytes(stringContents);
+
+        return new VFile(filename, fileLocation, fileContents);
+    }
+
+    // Parses the file contents string back into bytes
+    const ubyte[] parseBytes(string contents)
+    {
+        auto cSplit = contents.split(",");
+        return null;
+    }
 }
