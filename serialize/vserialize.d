@@ -27,6 +27,7 @@ public:
         auto fullFile = header~filename~loc~contents~endContents~endHeader;
 
         // If stage file exists, append. If not, create
+        // TODO: Implement a check for duplicate files
         if(std.file.exists(stageFile))
         {
             auto file = File(stageFile, "a");
@@ -42,9 +43,10 @@ public:
     }
 
     // "Deserialise the generated files" -- Mainly for revert
-    void deserialize()
+    VFile[] deserialize()
     {
-        // TODO: Implement
+        // TODO: Find out how to parse the files properly...
+        return null;
     }
 
 private:

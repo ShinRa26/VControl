@@ -1,4 +1,4 @@
-module vctrl.commitcontrol;
+module vctrl.commit_control;
 
 import std.stdio, std.file, std.conv, std.string, std.algorithm;
 
@@ -9,8 +9,10 @@ public:
     ~this(){}
 
     // Writes the stage to a commit folder with a message
-    void commitWithMessage(string msg)
+    void commit(string msg)
     {
+
+        // Gets the stage and generates an ID
         const string stageContents = getStage();
         const string commitID = generateCommitID();
 
@@ -20,26 +22,26 @@ public:
             return;
         }
 
+        // Make the Commit folder and move to it
         mkdir(commitID);
         chdir(commitID);
+
+        // Write the commit file
         auto commitFile = File(commitID~".vfile", "w");
         commitFile.write(stageContents);
         commitFile.close();
 
+        writefln("Stage committed under Commit ID: %s", commitID);
+
+        // Write the log
         writeLog(commitID, msg);
-    }
-
-    // Writes the stage to a commit folder without a message - uses the current date of commit
-    void commitWithoutMessage()
-    {
-
     }
 
 
 private:
     const string opFolder = ".vctrl";
     const string stageFolder = "current_stage";
-    const string stageFile = "stage.vctrl";
+    const string stageFile = "stage.vfile";
     const int[] idDigits = [0,1,2,3,4,5,6,7,8,9];
     const string[] idLetters = ["a", "b", "c", "d", "e", "f"];
 
@@ -76,16 +78,16 @@ private:
             moveDir(opFolder);
             moveDir(stageFolder);
             const string stageContents = to!string(read(stageFile));
+            remove(stageFile);
             chdir("..");
+
             return stageContents;
         }
         catch(Exception e)
         {
-            writefln("Unable to locate stage file in .vctrl/current stage folder!");
+            writefln("Unable to locate stage file in .vctrl/current_stage folder!\nHave you added any files?");
             return "";
         }
-
-        return "";
     }
 
     // Writes the log file for the commit
@@ -130,8 +132,8 @@ private:
         auto datetime = Clock.currTime().toString();
         auto dt = datetime.split(" ");
         auto date = dt[0];
-        auto fullTtime = dt[1];
-        auto stripTime = time.split(".");
+        auto fullTime = dt[1];
+        auto stripTime = fullTime.split(".");
         auto actualTime = stripTime[0];
 
         string[] niceDateTime;

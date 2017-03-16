@@ -2,7 +2,7 @@ module vctrl.manager;
 
 import std.stdio, std.file;
 import vctrl.vfile;
-import vctrl.addcontrol, vctrl.commitcontrol; // , vctrl.revertcontrol, vctrl.diffcontrol;
+import vctrl.add_control, vctrl.commit_control, vctrl.revert_control;
 
 class Manager
 {
@@ -12,7 +12,9 @@ public:
         loadStageFile();
         ac = new AddControl(stage);
         cc = new CommitControl();
+        rc = new RevertControl();
     }
+
     ~this(){}
 
     /*****************************************************************
@@ -75,15 +77,19 @@ public:
     *****************************************************************/    
 
     // Commits the saved stage file with the passed message
-    void commitWithMessage(string msg)
+    void commit(string msg)
     {
-        cc.commitWithMessage(msg);
+        cc.commit(msg);
     }
 
-    // Commits the saved stage without a message - uses a default date
-    void commitWithoutMessage()
+    /*****************************************************************
+    ****************************REVERT SECTION************************
+    *****************************************************************/  
+
+    // Reverts the commit mathcing the ID, getting the files back
+    void revert(string id)
     {
-        cc.commitWithoutMessage();
+        rc.revert(id);
     }
 
 private:
@@ -91,8 +97,7 @@ private:
 
     AddControl ac;
     CommitControl cc;
-    // RevertControl rc;
-    // DiffControl dc;
+    RevertControl rc;
 
     const string vctrlFolder = ".vctrl";
 

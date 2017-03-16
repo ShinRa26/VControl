@@ -1,4 +1,4 @@
-module vctrl.addcontrol;
+module vctrl.add_control;
 
 import std.stdio, std.string, std.file, std.algorithm, std.conv;
 import vctrl.vfile, serialize.vserialize;
@@ -20,6 +20,7 @@ public:
     void addFromRoot()
     {
         moveDir(rootFolder);
+        chdir(".."); // <--- HACK!
         addFromCWD();
     }
 
@@ -38,6 +39,7 @@ public:
 
                 const ubyte[] fileContents = cast(const ubyte[])read(name);
                 this.stage ~= new VFile(name, loc, fileContents);
+                writefln("Added file \'%s\' to the stage.", name);
             }
         }
         saveStage();
@@ -58,9 +60,13 @@ public:
     // Saves the stage to a file
     void saveStage()
     {
-        // Move to the .vctrl folder
-        moveDir(rootFolder);
-        chdir(rootFolder~"/"~stageFolder);
+        try
+        {
+            // Move to the .vctrl folder
+            moveDir(rootFolder);
+            chdir(stageFolder);
+        }
+        catch(Exception e){writeln("Caught!");}
         
         // TODO: Find a half-decent serialisation library - Orange throws errors for some reason
         // Technically not serialization...
@@ -105,10 +111,8 @@ private:
          if(ignore == null)
          {
              if(file.isDir || canFind(file, ".git") || canFind(file, ".o") || canFind(file, "ignore"))
-             {
-                writefln("Ignoring file: %s", file);
                 return false;
-             }
+
             return true;
          }
          else
@@ -116,10 +120,7 @@ private:
              foreach(i; ignore)
              {
                  if(file.isDir || canFind(file, i) || canFind(file, ".vctrlignore"))
-                 {
-                    writefln("Ignoring file: %s", file);
                     return false;
-                 }
              }
              return true;
          }

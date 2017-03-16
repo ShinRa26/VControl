@@ -1,5 +1,7 @@
 # Ignores files with the following extensions or keywords
 .o
 .git
-.jpeg
 .vctrl
+LICENSE
+.md
+Makefile

@@ -41,18 +41,16 @@ private:
                 case "commit":
                     try
                     {
-                        parseCommitWithMessage(args[1..$]);
+                        parseCommit(args[1..$]);
                     }
                     catch(core.exception.RangeError e)
                     {
-                        parseCommit();
+                        parseCommit(new string[0]);
                     }
                     break;
-                // case "revert":
-                //     parseRevert(args[1..$]);
-                //     break;
-                // case "diff":
-                //     parseDiff(args[1..$]);
+                case "revert":
+                    parseRevert(args[1..$]);
+                    break;
                 default:
                     writeln("That is not a valid command!\n");
                     break;
@@ -80,13 +78,19 @@ private:
     }
 
     // Parse Commit args
-    void parseCommitWithMessage(string[] commitArgs)
+    void parseCommit(string[] commitArgs)
     {
+        if(commitArgs.length == 0)
+        {
+            mgr.commit("");
+            return;
+        }
+
         if(commitArgs[0] == "-m" || commitArgs[0] == "-M")
         {
             try
             {
-                mgr.commitWithMessage(commitArgs[1]);
+                mgr.commit(commitArgs[1]);
             }
             catch(Exception e)
             {
@@ -97,9 +101,9 @@ private:
             writeln("That is not a valid flag!");
     }
 
-    // Commit passed without message - uses default.
-    void parseCommit()
+    // Parse Revert commands
+    void parseRevert(string[] revertArgs)
     {
-        mgr.commitWithoutMessage();
+        mgr.revert(revertArgs[0]);
     }
 }
