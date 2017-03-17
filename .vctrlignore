@@ -6,4 +6,5 @@
 .vctrl
 LICENSE
 .md
+log
 Makefile

@@ -52,6 +52,8 @@ public:
         foreach(file; fileSplit)
         {
             VFile rFile = parseSingleFile(file);
+            if(rFile is null)
+                continue;
             revertFiles~=rFile;
         }
 
@@ -65,28 +67,48 @@ private:
     // Parses a data string to extract the necessary information to build a VFile -- For Revert only
     VFile parseSingleFile(string data)
     {
+        ubyte[] fileContents;
         auto dataSplit = data.split("\n");
         string filename, fileLocation, stringContents;
-        ubyte[] fileContents;
 
         try
         {
             for(int i = 0; i < dataSplit.length; i++)
             {
                 if(canFind(dataSplit[i], "<Filename>"))
-                    filename = dataSplit[i+1];
+                {
+                    const auto tabSplit = dataSplit[i+1].split("\t");
+                    filename = tabSplit[tabSplit.length-1];
+                }
                 else if(canFind(dataSplit[i], "<FileLocation>"))
-                    fileLocation = dataSplit[i+1];
+                {
+                    if(canFind(dataSplit[i+1], "''"))
+                    {
+                        auto loc = stripLocation(filename);
+                        auto tabSplit = loc.split("\t");
+                        auto markSplit = tabSplit[tabSplit.length-1].split("'");
+                        fileLocation = markSplit[markSplit.length-2];
+                    }
+                    else
+                    {
+                        auto tabSplit = dataSplit[i+1].split("\t");
+                        auto markSplit = tabSplit[tabSplit.length-1].split("'");
+                        fileLocation = markSplit[markSplit.length-2];
+                    }
+                }
                 else if(canFind(dataSplit[i], "<Contents>"))
                     stringContents = dataSplit[i+1];
             }
         }
         catch(core.exception.RangeError)
         {
-            writeln("Error in parsing the file contents. Have you been fucking about witht he commit file!?");
+            writeln("Error in parsing the file contents. Have you been fucking about with the commit file!?");
         }
 
         fileContents = parseBytes(stringContents);
+
+        if(filename == "" || fileLocation == "" || fileContents is null)
+            return null;
 
         return new VFile(filename, fileLocation, fileContents);
     }
@@ -94,7 +116,64 @@ private:
     // Parses the file contents string back into bytes
     const ubyte[] parseBytes(string contents)
     {
+        ubyte[] contentBytes;
         auto cSplit = contents.split(",");
-        return null;
+        
+        foreach(c; cSplit)
+        {
+            if(canFind(c, "\t"))
+            {
+                auto tabSplit = c.split("\t");
+                auto toInt = to!int(tabSplit[tabSplit.length-1]);
+                contentBytes ~= cast(ubyte)toInt;
+            }
+            else if(c == "")
+                break;
+            else
+            {
+                auto toInt = to!int(c);
+                contentBytes ~= cast(ubyte)toInt;
+            }
+        }
+
+        return contentBytes;
+    }
+
+    // Strips the location from the filename if the location is empty -- ONLY IN SOME CASES
+    string stripLocation(string fullName)
+    {
+        import std.system;
+
+        version(Windows)
+        {
+            auto splitPath = fullName.split("\\");
+            string path;
+            for(int i = 0; i < splitPath.length; i++)
+            {
+                if(i == splitPath.length-1)
+                    break;
+                
+                auto build = splitPath[i]~="\\";
+                path~=build;
+            }
+
+            return path;
+        }
+
+        version(Posix)
+        {
+            auto splitPath = fullName.split("/");
+            string path;
+            for(int i = 0; i < splitPath.length; i++)
+            {
+                if(i == splitPath.length-1)
+                    break;
+                
+                auto build = splitPath[i]~="/";
+                path~=build;
+            }
+
+            return path;
+        }
     }
 }

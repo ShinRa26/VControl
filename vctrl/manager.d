@@ -9,7 +9,6 @@ class Manager
 public:
     this()
     {
-        loadStageFile();
         ac = new AddControl(stage);
         cc = new CommitControl();
         rc = new RevertControl();
@@ -104,17 +103,4 @@ private:
     /*****************************************************************
     ************************** MANAGER CONTROLS **********************
     *****************************************************************/
-
-    // Loads the stage from the stage file, if it exists
-    void loadStageFile()
-    {
-        // TODO: Implement
-        this.stage = null;
-    }
-
-    // Removes the saved stage file -- AFTER COMMITS --
-    void removeStageFile()
-    {
-        // TODO: Implement
-    }
 }

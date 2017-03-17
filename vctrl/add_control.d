@@ -27,6 +27,7 @@ public:
     // Add all files in the cwd and all subfolders
     void addFromCWD()
     {
+        int count = 0;
         auto entries = dirEntries(getcwd(), "*.*", SpanMode.breadth);
         foreach(e;entries)
         {       
@@ -40,8 +41,10 @@ public:
                 const ubyte[] fileContents = cast(const ubyte[])read(name);
                 this.stage ~= new VFile(name, loc, fileContents);
                 writefln("Added file \'%s\' to the stage.", name);
+                count++;
             }
         }
+        writefln("Added %d files to the stage.", count);
         saveStage();
     }
 
