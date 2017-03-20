@@ -32,7 +32,7 @@ public:
                 continue;
             writeFile(f);
         }
-        writefln("\nRestored %d files.", parsedFiles.length);
+        writefln("Restored %d files.\n", parsedFiles.length);
     }
 
 private:
@@ -48,22 +48,47 @@ private:
         {
             assert(vf.loc.isDir);
 
+            if(!isFilenamePath(vf.filename))
+            {
+                version(Posix)
+                {
+                    vf.filename = vf.loc ~ "/" ~ vf.filename;
+                }
+
+                version(Windows)
+                {
+                    vf.filename = vf.loc ~ "\\" ~ vf.filename;
+                }
+            }
+
             auto f = File(vf.filename, "w");
             f.write(cast(string)vf.contents);
             f.close();
 
-            writefln("Successfully restored %s", vf.filename);
+            writefln("\nSuccessfully restored file: %s", vf.filename);
         }
         catch(Exception e)
         {
             mkdir(vf.loc);
             writefln("Restored directory: %s", vf.loc);
 
+            if(!isFilenamePath(vf.filename))
+            {
+                version(Posix)
+                {
+                    vf.filename = vf.loc ~ "/" ~ vf.filename;
+                }
+                version(Windows)
+                {
+                    vf.filename = vf.loc ~ "\\" ~ vf.filename;
+                }
+            }
+
             auto f = File(vf.filename, "w");
             f.write(cast(string)vf.contents);
             f.close();
 
-            writefln("Successfully restored file: %s", vf.filename);
+            writefln("\nSuccessfully restored file: %s", vf.filename);
         }
     }
 
@@ -81,5 +106,21 @@ private:
         }
         chdir("..");
         moveDir(dir);
+    }
+
+    // Checks if the filename is a path or not
+    bool isFilenamePath(string fn)
+    {
+        version(Windows)
+        {
+            auto split = fn.split("\\");
+            return split.length != 1;
+        }
+
+        version(Posix)
+        {
+            auto split = fn.split("/");
+            return split.length != 1;
+        }
     }
 }

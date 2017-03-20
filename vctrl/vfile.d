@@ -13,7 +13,7 @@ public:
     }
     ~this(){}
 
-    const string filename;
+    string filename;
     const string loc;
     const ubyte[] contents;
 }
